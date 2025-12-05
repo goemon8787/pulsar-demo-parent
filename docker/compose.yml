@@ -1,0 +1,47 @@
+services:
+  # Apache Pulsar Standalone
+  pulsar:
+    image: apachepulsar/pulsar:latest
+    container_name: pulsar
+    tty: true
+    command: bin/pulsar standalone
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    volumes:
+      - pulsar-data:/pulsar/data
+      - pulsar-conf:/pulsar/conf
+    environment:
+      - PULSAR_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
+
+  # Apache Flink JobManager
+  flink-jobmanager:
+    image: flink:latest
+    container_name: flink-jobmanager
+    tty: true
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager
+
+  # Apache Flink TaskManager
+  flink-taskmanager:
+    image: flink:latest
+    container_name: flink-taskmanager
+    tty: true
+    depends_on:
+      - flink-jobmanager
+    command: taskmanager
+    scale: 1
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager
+        taskmanager.numberOfTaskSlots: 10
+
+volumes:
+  pulsar-data:
+  pulsar-conf:
