@@ -43,7 +43,8 @@ public class PulsarProducer {
     }
 
     private static void loadConfig() throws java.io.IOException {
-        java.io.InputStream input = PulsarProducer.class.getClassLoader().getResourceAsStream("config.properties");
+        java.io.InputStream input = PulsarProducer.class.getClassLoader()
+                .getResourceAsStream("configs/config.properties");
         if (input == null) {
             System.out.println("Sorry, unable to find config.properties");
             return;
