@@ -1,9 +1,7 @@
 package org.opchan;
 
 import org.apache.pulsar.client.api.Producer;
-import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.PulsarClient;
-import org.apache.pulsar.client.api.PulsarClientException;
 
 public class PulsarProducer {
     private static String serviceUrl;
@@ -24,19 +22,19 @@ public class PulsarProducer {
 
                 System.out.println("Producer created. Enter messages to send (type 'exit' to quit):");
 
-                java.util.Scanner scanner = new java.util.Scanner(System.in);
+                try (java.util.Scanner scanner = new java.util.Scanner(System.in)) {
+                    while (true) {
+                        System.out.print("> ");
+                        String input = scanner.nextLine();
 
-                while (true) {
-                    System.out.print("> ");
-                    String input = scanner.nextLine();
+                        if ("exit".equalsIgnoreCase(input)) {
+                            System.out.println("Exiting...");
+                            break;
+                        }
 
-                    if ("exit".equalsIgnoreCase(input)) {
-                        System.out.println("Exiting...");
-                        break;
+                        producer.send(input.getBytes());
+                        System.out.println("Message sent: " + input);
                     }
-
-                    producer.send(input.getBytes());
-                    System.out.println("Message sent: " + input);
                 }
             }
         }
