@@ -1,42 +1,45 @@
-# デモプロジェクト
+# Pulsar Demo Project
 
-Apache PulsarとApache Flinkを使用したデモプロジェクトです。
+This project demonstrates a simple Apache Pulsar Producer and Consumer implementation in Java.
 
-## 前提条件
+## Prerequisites
 
-- Java 11以上
-- Maven 3.6以上
-- Docker および Docker Compose
+- Apache Pulsar must be running locally on `pulsar://localhost:6650`.
+- Java JDK 17+
+- Maven
 
-## 始め方
+## Usage
 
-### プロジェクトのビルド
+### 1. Start the Consumer
+The consumer listens for messages on the topic `my-topic`.
 
+Open a terminal and run:
 ```bash
-mvn clean package
+cd pulsar-demo
+mvn exec:java -Dexec.mainClass="org.opchan.PulsarConsumer"
 ```
 
-### Dockerサービスの実行
+### 2. Start the Producer
+The producer allows you to send messages to `my-topic` interactively.
 
-このプロジェクトには、Apache PulsarとApache FlinkのためのDocker Compose設定が含まれています。
-
+Open a second terminal and run:
 ```bash
-cd docker
-docker compose up -d
+cd pulsar-demo
+mvn exec:java -Dexec.mainClass="org.opchan.PulsarProducer"
 ```
 
-サービスは以下で利用可能です：
-- **Pulsar Broker**: `pulsar://localhost:6650`
-- **Pulsar HTTP**: `http://localhost:8080`
-- **Flink Dashboard**: `http://localhost:8081`
+Once started, type your message and press Enter to send it. Type `exit` to quit.
 
-サービスを停止するには：
+## Example Interaction
 
-### Topicの確認
-
-作成されたTopicを確認するには以下のコマンドを実行します：
-
-```bash
-docker exec pulsar bin/pulsar-admin topics list public/default
+**Producer Terminal:**
+```text
+Producer created. Enter messages to send (type 'exit' to quit):
+> Hello Pulsar
+Message sent: Hello Pulsar
 ```
 
+**Consumer Terminal:**
+```text
+Message received: Hello Pulsar
+```

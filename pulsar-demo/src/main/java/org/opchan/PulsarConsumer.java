@@ -5,7 +5,7 @@ import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 
-public class App {
+public class PulsarConsumer {
     private static final String SERVICE_URL = "pulsar://localhost:6650";
     private static final String TOPIC_NAME = "my-topic";
     private static final String SUBSCRIPTION_NAME = "my-subscription";
