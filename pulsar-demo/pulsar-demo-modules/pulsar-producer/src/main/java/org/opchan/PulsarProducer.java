@@ -6,19 +6,20 @@ import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 
 public class PulsarProducer {
-    private static final String SERVICE_URL = "pulsar://localhost:6650";
-    private static final String TOPIC_NAME = "my-topic";
+    private static String serviceUrl;
+    private static String topicName;
 
-    public static void main(String[] args) throws PulsarClientException {
-        System.out.println("Connecting to Pulsar at " + SERVICE_URL);
+    public static void main(String[] args) throws Exception {
+        loadConfig();
+        System.out.println("Connecting to Pulsar at " + serviceUrl);
 
         try (PulsarClient client = PulsarClient.builder()
-                .serviceUrl(SERVICE_URL)
+                .serviceUrl(serviceUrl)
                 .build()) {
 
-            System.out.println("Creating producer for topic " + TOPIC_NAME);
+            System.out.println("Creating producer for topic " + topicName);
             try (Producer<byte[]> producer = client.newProducer()
-                    .topic(TOPIC_NAME)
+                    .topic(topicName)
                     .create()) {
 
                 System.out.println("Producer created. Enter messages to send (type 'exit' to quit):");
@@ -39,5 +40,19 @@ public class PulsarProducer {
                 }
             }
         }
+    }
+
+    private static void loadConfig() throws java.io.IOException {
+        java.io.InputStream input = PulsarProducer.class.getClassLoader().getResourceAsStream("config.properties");
+        if (input == null) {
+            System.out.println("Sorry, unable to find config.properties");
+            return;
+        }
+
+        java.util.Properties prop = new java.util.Properties();
+        prop.load(input);
+
+        serviceUrl = prop.getProperty("pulsar.serviceUrl");
+        topicName = prop.getProperty("pulsar.topicName");
     }
 }

@@ -6,22 +6,23 @@ import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 
 public class PulsarConsumer {
-    private static final String SERVICE_URL = "pulsar://localhost:6650";
-    private static final String TOPIC_NAME = "my-topic";
-    private static final String SUBSCRIPTION_NAME = "my-subscription";
+    private static String serviceUrl;
+    private static String topicName;
+    private static String subscriptionName;
 
-    public static void main(String[] args) throws PulsarClientException {
-        System.out.println("Connecting to Pulsar at " + SERVICE_URL);
+    public static void main(String[] args) throws Exception {
+        loadConfig();
+        System.out.println("Connecting to Pulsar at " + serviceUrl);
 
         try (PulsarClient client = PulsarClient.builder()
-                .serviceUrl(SERVICE_URL)
+                .serviceUrl(serviceUrl)
                 .build()) {
 
-            System.out.println("Creating consumer for topic " + TOPIC_NAME);
+            System.out.println("Creating consumer for topic " + topicName);
 
             try (Consumer<byte[]> consumer = client.newConsumer()
-                    .topic(TOPIC_NAME)
-                    .subscriptionName(SUBSCRIPTION_NAME)
+                    .topic(topicName)
+                    .subscriptionName(subscriptionName)
                     .subscribe()) {
 
                 System.out.println("Subscribed. Waiting for messages...");
@@ -43,5 +44,20 @@ public class PulsarConsumer {
                 }
             }
         }
+    }
+
+    private static void loadConfig() throws java.io.IOException {
+        java.io.InputStream input = PulsarConsumer.class.getClassLoader().getResourceAsStream("config.properties");
+        if (input == null) {
+            System.out.println("Sorry, unable to find config.properties");
+            return;
+        }
+
+        java.util.Properties prop = new java.util.Properties();
+        prop.load(input);
+
+        serviceUrl = prop.getProperty("pulsar.serviceUrl");
+        topicName = prop.getProperty("pulsar.topicName");
+        subscriptionName = prop.getProperty("pulsar.subscriptionName");
     }
 }
